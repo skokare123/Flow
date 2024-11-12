@@ -4,8 +4,8 @@
     <assignments>
         <name>Assign_Value_in_tempOrderProduct</name>
         <label>Assign Value in tempOrderProduct</label>
-        <locationX>264</locationX>
-        <locationY>647</locationY>
+        <locationX>138</locationX>
+        <locationY>971</locationY>
         <assignmentItems>
             <assignToReference>tempOrderProduct.OrderId</assignToReference>
             <operator>Assign</operator>
@@ -55,8 +55,8 @@
     <assignments>
         <name>Colection_of_OrderProduct</name>
         <label>Collection of OrderProduct</label>
-        <locationX>264</locationX>
-        <locationY>755</locationY>
+        <locationX>138</locationX>
+        <locationY>1079</locationY>
         <assignmentItems>
             <assignToReference>orderProduct</assignToReference>
             <operator>Add</operator>
@@ -68,6 +68,28 @@
             <targetReference>Loop_Through_All_Opp_Line_Items</targetReference>
         </connector>
     </assignments>
+    <decisions>
+        <name>Quote_is_sync_to_Opp</name>
+        <label>Quote is sync to Opp</label>
+        <locationX>182</locationX>
+        <locationY>539</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>IsSync</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Quote</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_the_Order</targetReference>
+            </connector>
+            <label>IsSync</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <formulas>
         <name>ExpairyDate</name>
@@ -79,8 +101,8 @@
     <loops>
         <name>Loop_Through_All_Opp_Line_Items</name>
         <label>Loop Through All Opp Line Items</label>
-        <locationX>176</locationX>
-        <locationY>539</locationY>
+        <locationX>50</locationX>
+        <locationY>863</locationY>
         <collectionReference>Get_All_Opp_Line_Item</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -112,34 +134,52 @@
     <recordCreates>
         <name>Create_Order_Line_Items</name>
         <label>Create Order Line Items</label>
-        <locationX>176</locationX>
-        <locationY>947</locationY>
+        <locationX>50</locationX>
+        <locationY>1271</locationY>
         <inputReference>orderProduct</inputReference>
     </recordCreates>
     <recordCreates>
         <name>Create_the_Order</name>
         <label>Create the Order</label>
-        <locationX>176</locationX>
-        <locationY>323</locationY>
+        <locationX>50</locationX>
+        <locationY>647</locationY>
         <connector>
             <targetReference>Get_All_Opp_Line_Item</targetReference>
         </connector>
         <inputAssignments>
             <field>AccountId</field>
             <value>
-                <elementReference>$Record.Account.Id</elementReference>
+                <elementReference>Get_Account_Record.Id</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
-            <field>CustomerAuthorizedById</field>
+            <field>BillingCity</field>
             <value>
-                <elementReference>$Record.ContactId</elementReference>
+                <elementReference>Get_Account_Record.BillingCity</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
-            <field>CustomerAuthorizedDate</field>
+            <field>BillingCountry</field>
             <value>
-                <elementReference>$Record.CloseDate</elementReference>
+                <elementReference>Get_Account_Record.BillingCountry</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>BillingPostalCode</field>
+            <value>
+                <elementReference>Get_Account_Record.BillingPostalCode</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>BillingState</field>
+            <value>
+                <elementReference>Get_Account_Record.BillingState</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>BillingStreet</field>
+            <value>
+                <elementReference>Get_Account_Record.BillingStreet</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -155,6 +195,36 @@
             </value>
         </inputAssignments>
         <inputAssignments>
+            <field>ShippingCity</field>
+            <value>
+                <elementReference>Get_Account_Record.BillingCity</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ShippingCountry</field>
+            <value>
+                <elementReference>Get_Account_Record.BillingCountry</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ShippingPostalCode</field>
+            <value>
+                <elementReference>Get_Account_Record.BillingPostalCode</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ShippingState</field>
+            <value>
+                <elementReference>Get_Account_Record.BillingState</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ShippingStreet</field>
+            <value>
+                <elementReference>Get_Account_Record.BillingStreet</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
             <field>Status</field>
             <value>
                 <stringValue>Draft</stringValue>
@@ -164,10 +234,31 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
     <recordLookups>
+        <name>Get_Account_Record</name>
+        <label>Get Account Record</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Quote</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_All_Opp_Line_Item</name>
         <label>Get All Opp Line Item</label>
-        <locationX>176</locationX>
-        <locationY>431</locationY>
+        <locationX>50</locationX>
+        <locationY>755</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Loop_Through_All_Opp_Line_Items</targetReference>
@@ -184,11 +275,39 @@
         <object>OpportunityLineItem</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Get_Quote</name>
+        <label>Get Quote</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Quote_is_sync_to_Opp</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>OpportunityId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsSyncing</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Quote</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <start>
-        <locationX>50</locationX>
+        <locationX>56</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Create_the_Order</targetReference>
+            <targetReference>Get_Account_Record</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
